@@ -16,7 +16,7 @@ int main () {
 	string questionValueString;
 
 	// Get user input, continue running if not quit
-	cin >> question;
+	getline(cin, question);
 	while (question != "QUIT") {
 
 		// Create two pipes
@@ -49,19 +49,22 @@ int main () {
 			// Close to8 write end, wait for child, read response
 			close(to8[WRITE]);
 			wait(NULL);
-			read(from8[READ], response, sizeof(response));
+			read(from8[READ], response, sizeof(response)+1);
+			cout << response << endl;
 
 		// If Child
 		} else {
 			// Close to8 write end, redirect to8 read end to stdin
 			close(to8[WRITE]);
 			dup2(to8[READ], STDIN_FILENO);
+			// Close from8 read end, redirect from8 write end to stdout
+			close(from8[READ]);
+			dup2(from8[WRITE], STDOUT_FILENO);
 
 			// Exec eight-ball, close from8 read end
 			execl("eight-ball", "eight-ball", nullptr);
-			close(from8[READ]);
 		}
-		cin >> question;
+		getline(cin, question);
 	}
 
 	return 0;
