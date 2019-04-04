@@ -18,39 +18,48 @@ int main () {
 	char response[100];
 	string questionValueString;
 
-	// TODO: fork and exec eight-ball
-	// TODO: pipe questionValue to eight-ball
-	// TODO: pipe eight-ball output to this process
-
+	// Get user input, continue running if not quit
 	cin >> question;
 	while (question != "QUIT") {
+		// Create two pipes
 		if (pipe(to8) == -1 || pipe(from8) == -1) {
 			cerr << "Pipe failed" << endl;
 			return 1;
 		}
 
+		// Fork process
 		pid = fork();
 		if (pid == -1) {
 			cerr << "Fork failed" << endl;
 			return 1;
 		}
 
+		// If parent
 		if (pid > 0) {
+			// Close pipe ends
 			close(to8[READ]);
 			close(from8[WRITE]);
 
+			// Convert question to integer representation
 			questionValue = 0;
 			for (unsigned int i=0; i<question.length(); i++)
 				questionValue += int(question.at(i));
 			questionValueString = to_string(questionValue);
 
+			// Write to to8 pipe write end
 			write(to8[WRITE], questionValueString.c_str(), questionValueString.size()+1);
+			// Close to8 write end, wait for child, read response
 			close(to8[WRITE]);
 			wait(NULL);
 			read(from8[READ], response, sizeof(response));
+
+		// If Child
 		} else {
+			// Close to8 write end, redirect to8 read end to stdin
 			close(to8[WRITE]);
 			dup2(to8[READ], READ);
+
+			// Exec eight-ball, close from8 read end
 			execl("eight-ball", "eight-ball", nullptr);
 			close(from8[READ]);
 		}
