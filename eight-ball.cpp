@@ -1,14 +1,17 @@
 #include <iostream>
+#include <string>
+#include <stdlib.h>
 
 using namespace std;
 
 int main () {
-	int toConvert;
+	string toConvert;
 
 	cin >> toConvert;
-	toConvert = toConvert % 20;
+	int value = strtol(toConvert.c_str(), NULL, 10);
+	value = value % 20;
 
-	switch (toConvert) {
+	switch (value) {
 		case 0:
 			cout << "It is certain." << endl;
 			break;
