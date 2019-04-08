@@ -8,7 +8,6 @@ enum Ends { READ, WRITE };
 
 int main () {
 	string question = "";
-	int questionValue;
 	int to8[2];
 	int from8[2];
 	pid_t pid;
@@ -33,7 +32,7 @@ int main () {
 		}
 
 		// Convert question to integer representation
-		questionValue = 0;
+		int questionValue = 0;
 		for (unsigned int i=0; i<question.length(); i++)
 			questionValue += int(question.at(i));
 		questionValueString = to_string(questionValue);
@@ -49,7 +48,8 @@ int main () {
 			// Close to8 write end, wait for child, read response
 			close(to8[WRITE]);
 			wait(NULL);
-			read(from8[READ], response, sizeof(response)+1);
+			int len = read(from8[READ], response, sizeof(response)+1);
+			response[len] = char(0);
 			cout << response << endl;
 
 		// If Child
