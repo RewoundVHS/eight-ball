@@ -4,6 +4,7 @@
 
 using namespace std;
 
+const int BUF_SIZE = 1000;
 enum Ends { READ, WRITE };
 
 int main () {
@@ -48,7 +49,8 @@ int main () {
 			// Close to8 write end, wait for child, read response
 			close(to8[WRITE]);
 			wait(NULL);
-			int len = read(from8[READ], response, sizeof(response)+1);
+			int len = read(from8[READ], response, BUF_SIZE);
+			len = min(len, BUF_SIZE-1);
 			response[len] = char(0);
 			cout << response << endl;
 
